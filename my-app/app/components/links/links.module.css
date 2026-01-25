@@ -1,0 +1,22 @@
+.mobileMenu {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobileMenu {
+        position: absolute;
+        top: 100px;
+        right: 0;
+        width: 50%;
+        background: red;
+        height: calc(100vh - 100px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        overflow: hidden;
+        transition: height 0.3s ease-in-out;
+        z-index: 100;
+    }
+}
