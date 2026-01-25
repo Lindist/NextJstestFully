@@ -1,7 +1,19 @@
+import PostCard from "../components/postCard/postCard";
+
 const BlogPage = () => {
     return (
-        <div>
-            <h1>Blog</h1>
+        <div className="flex flex-wrap gap-[20px] justify-between">
+
+            <div className="w-[30%] max-md:w-[100%] max-xl:w-[45%]">
+                <PostCard />
+            </div>
+            <div className="w-[30%] max-md:w-[100%] max-xl:w-[45%]">
+                <PostCard />
+            </div>
+            <div className="w-[30%] max-md:w-[100%] max-xl:w-[45%]">
+                <PostCard />
+            </div>
+
         </div>
     );
 };
