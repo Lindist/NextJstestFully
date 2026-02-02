@@ -1,6 +1,7 @@
 "use client"
 
 import NavLink from "./navLink/navLink";
+import Image from "next/image";
 import { useState } from "react";
 import styles from "./links.module.css";
 const Links = () => {
@@ -35,7 +36,7 @@ const Links = () => {
                     )
                 }
             </div>
-            <button className="hidden max-md:block cursor-pointer" onClick={() => setOpen(!open)}>Menu</button>
+            <Image className="hidden max-md:block cursor-pointer" src="/menu.png" alt="menu" width={20} height={20} onClick={() => setOpen(!open)} />
             {
                 open && (
                     <div className={styles.mobileMenu}>

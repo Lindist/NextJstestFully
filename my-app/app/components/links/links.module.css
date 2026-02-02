@@ -4,12 +4,11 @@
 
 @media (max-width: 768px) {
     .mobileMenu {
-        position: absolute;
-        top: 100px;
+        position: fixed;
         right: 0;
         width: 50%;
-        background: red;
-        height: calc(100vh - 100px);
+        background: var(--background);
+        height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
