@@ -1,5 +1,9 @@
 import Image from "next/image";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Contact Page",
+  description: "Contact description",
+};
 const ContactPage = () => {
     return (
         <div className="flex gap-[100px] items-center max-md:flex-col max-md:gap-[50px]">

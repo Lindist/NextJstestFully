@@ -1,4 +1,9 @@
 import Image from "next/image";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "About Page",
+  description: "About description",
+};
 const AboutPage = () => {
     return (
         <div className="flex gap-[100px]">

@@ -1,28 +1,56 @@
 import Image from "next/image";
+import PostUser from "../../components/postUser/postUser";
+import { Suspense } from "react";
+import { getPost } from "../../lib/data";
+import { notFound } from "next/navigation";
 
-const BlogSlugPage = () => {
+//GET fetch API
+// const getPost = async (slug: string) => {
+//     const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${slug}`, {next: {revalidate: 3600}});
+//     if(!res.ok){
+//         throw new Error("Failed to fetch posts");
+//     }
+//     return res.json();
+//}
+
+export const generateMetadata = async ({params}: {params: Promise<{slug: string}>}) => {
+    const {slug} = await params;
+    const post = await getPost(String(slug));
+    return {
+        title: post.title,
+        description: post.desc,
+    };
+}
+
+const BlogSlugPage = async ({params}: {params: Promise<{slug: string}>}) => {
+    const {slug} = await params;
+    //GET fetch API
+    // const post = await getPost(slug);
+    //GET fetch without API
+    const post = await getPost(String(slug));
+
+    if (!post) {
+        return notFound();
+    }
     return (
         <div className="flex gap-[100px]">
-            <div className="flex-1 relative h-[calc(100vh-100px)] max-md:hidden">
-                <Image src="/post1.jpg" alt="" fill className="object-cover" />
-            </div>
+            {post.img && <div className="flex-1 relative h-[calc(100vh-100px)] max-md:hidden">
+                <Image src={post.img} alt="" fill className="object-cover" />
+            </div>}
+            
             <div className="flex-2 flex flex-col gap-[50px]">
-                <h1 className="text-[64px] font-bold mb-[24px]">Title</h1>
+                <h1 className="text-[64px] font-bold mb-[24px]">{post.title}</h1>
                 <div className="flex gap-[20px]">
-                    <div>
-                    <Image src="/noavatar.png" alt="" width={50} height={50} className="object-cover rounded-full" /> 
-                    </div>
-                    <div className="flex flex-col gap-[10px]">
-                        <span className="text-[gray] font-bold">Author</span>
-                        <span className="font-light">Four Cathoa</span>
-                    </div>
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <PostUser userId={post.userId} />
+                    </Suspense>
                     <div className="flex flex-col gap-[10px]">
                         <span className="text-[gray] font-bold">Published</span>
-                        <span className="font-light">01.01.2024</span>
+                        <span className="font-light">{post.createdAt.toString().slice(4, 15)}</span>
                     </div>
                 </div>
                 <div>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis impedit, dolores asperiores vitae expedita, eos consequuntur placeat beatae reiciendis vero distinctio quae magnam iure deleniti aliquid fugit consequatur sunt corrupti!
+                    {post.desc}
                 </div>
             </div>
         </div>
