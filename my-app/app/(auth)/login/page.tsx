@@ -1,8 +1,9 @@
+"use client";
+import LoginForm from "@/app/components/loginForm/loginForm";
+
 const LoginPage = () => {
     return (
-        <div>
-            <h1>Login</h1>
-        </div>
+        <LoginForm />
     );
 };
 

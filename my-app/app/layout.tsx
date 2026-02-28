@@ -16,10 +16,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Next.js 15 App HomePage",
-    template: "%s | Next.js 15 App",
+    default: "Next.js 16 App HomePage",
+    template: "%s | Next.js 16 App",
   },
-  description: "Next.js 15 App Description",
+  description: "Next.js 16 App Description",
 };
 
 export default function RootLayout({

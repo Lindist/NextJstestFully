@@ -1,17 +1,17 @@
 import Image from "next/image";
 import PostUser from "../../components/postUser/postUser";
 import { Suspense } from "react";
-import { getPost } from "../../lib/data";
+// import { getPost } from "../../lib/data";
 import { notFound } from "next/navigation";
 
 //GET fetch API
-// const getPost = async (slug: string) => {
-//     const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${slug}`, {next: {revalidate: 3600}});
-//     if(!res.ok){
-//         throw new Error("Failed to fetch posts");
-//     }
-//     return res.json();
-//}
+const getPost = async (slug: string) => {
+    const res = await fetch(`http://localhost:3000/api/blog/${slug}`, {next: {revalidate: 3600}});
+    if(!res.ok){
+        throw new Error("Failed to fetch posts");
+    }
+    return res.json();
+}
 
 export const generateMetadata = async ({params}: {params: Promise<{slug: string}>}) => {
     const {slug} = await params;
@@ -25,9 +25,9 @@ export const generateMetadata = async ({params}: {params: Promise<{slug: string}
 const BlogSlugPage = async ({params}: {params: Promise<{slug: string}>}) => {
     const {slug} = await params;
     //GET fetch API
-    // const post = await getPost(slug);
+    const post = await getPost(slug);
     //GET fetch without API
-    const post = await getPost(String(slug));
+    // const post = await getPost(String(slug));
 
     if (!post) {
         return notFound();
@@ -46,7 +46,7 @@ const BlogSlugPage = async ({params}: {params: Promise<{slug: string}>}) => {
                     </Suspense>
                     <div className="flex flex-col gap-[10px]">
                         <span className="text-[gray] font-bold">Published</span>
-                        <span className="font-light">{post.createdAt.toString().slice(4, 15)}</span>
+                        <span className="font-light">{post.createdAt.toString().slice(0, 10)}</span>
                     </div>
                 </div>
                 <div>

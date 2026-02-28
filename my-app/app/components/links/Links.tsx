@@ -4,7 +4,10 @@ import NavLink from "./navLink/navLink";
 import Image from "next/image";
 import { useState } from "react";
 import styles from "./links.module.css";
-const Links = () => {
+import { handleGithubLogout } from "@/app/lib/action";
+import { Session } from "next-auth";
+
+const Links = ({ session }: { session: Session | null }) => {
     const links = [
         { href: "/", label: "Home" },
         { href: "/about", label: "About" },
@@ -14,7 +17,6 @@ const Links = () => {
     const [open,setOpen] = useState(false);
 
     //Temporaly
-    const session = true;
     const isAdmin = true;
     return (
         <div className="max-lg:ms-30">
@@ -22,14 +24,16 @@ const Links = () => {
                 {links.map((link) => (
                     <NavLink href={link.href} label={link.label} key={link.href}></NavLink>
                 ))}{
-                    session ? (
+                    session?.user ? (
                         <>
                         {
-                            isAdmin && (
+                            session.user?.isAdmin && (
                                 <NavLink href="/admin" label="Admin"></NavLink>
                             )
                         }
-                        <button className="p-[10px] cursor-pointer font-bold rounded bg-[var(--btnLogout)]">Logout</button>
+                        <form action={handleGithubLogout}>
+                            <button type="submit" className="p-[10px] cursor-pointer font-bold rounded bg-[var(--btnLogout)]">Logout</button>
+                        </form>
                         </>
                     ) : (
                         <NavLink href="/login" label="Login"></NavLink>
