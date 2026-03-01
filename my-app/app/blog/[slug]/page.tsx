@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 
 //GET fetch API
 const getPost = async (slug: string) => {
-    const res = await fetch(`http://localhost:3000/api/blog/${slug}`, {next: {revalidate: 3600}});
+    const res = await fetch(`${process.env.BASE_URI || 'http://localhost:3000'}/api/blog/${slug}`, {next: {revalidate: 3600}});
     if(!res.ok){
         throw new Error("Failed to fetch posts");
     }
@@ -34,8 +34,10 @@ const BlogSlugPage = async ({params}: {params: Promise<{slug: string}>}) => {
     }
     return (
         <div className="flex gap-[100px]">
-            {post.img && <div className="flex-1 relative h-[calc(100vh-100px)] max-md:hidden">
+            {post.img ? <div className="flex-1 relative h-[calc(100vh-100px)] max-md:hidden">
                 <Image src={post.img} alt="" fill className="object-cover" />
+            </div> : <div className="flex-1 relative h-[calc(100vh-100px)] max-md:hidden">
+                <Image src="/noimage.jpg" alt="" fill className="object-cover" />
             </div>}
             
             <div className="flex-2 flex flex-col gap-[50px]">

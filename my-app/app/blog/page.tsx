@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 //GET fetch API
 const getPosts = async () => {
-    const res = await fetch("http://localhost:3000/api/blog", {next: {revalidate: 3600}});
+    const res = await fetch(`${process.env.BASE_URI || 'http://localhost:3000'}/api/blog`, {next: {revalidate: 3600}});
     if(!res.ok){
         throw new Error("Failed to fetch posts");
     }
