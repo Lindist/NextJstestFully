@@ -1,6 +1,7 @@
 import { connectToDb } from "../../../lib/utils";
 import { Post } from "../../../lib/models";
 import { NextResponse } from "next/server";
+import { auth } from "@/app/lib/auth";
 
 export const GET = async (req:Request,{params}: {params: Promise<{slug: string}>}) => {
     const {slug} = await params;
@@ -16,6 +17,11 @@ export const GET = async (req:Request,{params}: {params: Promise<{slug: string}>
 }
 
 export const DELETE = async (req:Request,{params}: {params: Promise<{slug: string}>}) => {
+    const session = await auth();
+    if (!session?.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const {slug} = await params;
     try {
         connectToDb()

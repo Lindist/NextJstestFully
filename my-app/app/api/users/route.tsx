@@ -1,9 +1,15 @@
 import { connectToDb } from "@/app/lib/utils";
 import { User } from "@/app/lib/models";
 import { NextResponse } from "next/server";
+import { auth } from "@/app/lib/auth";
 
 // POST /api/users — Create a new user
 export const POST = async (req: Request) => {
+    const session = await auth();
+    if (!session?.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     try {
         const body = await req.json();
         const { username, email, password, img, isAdmin } = body;

@@ -2,9 +2,15 @@ import { connectToDb } from "@/app/lib/utils";
 import { Post, User } from "@/app/lib/models";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import { auth } from "@/app/lib/auth";
 
 // PUT /api/users/[id] — Update a user
 export const PUT = async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
+    const session = await auth();
+    if (!session?.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
     try {
         const body = await req.json();
@@ -35,6 +41,11 @@ export const PUT = async (req: Request, { params }: { params: Promise<{ id: stri
 
 // DELETE /api/users/[id] — Delete a user and their posts
 export const DELETE = async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
+    const session = await auth();
+    if (!session?.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
     try {
         await connectToDb();
