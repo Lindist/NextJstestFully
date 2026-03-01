@@ -1,10 +1,32 @@
-import { getUsers } from "@/app/lib/data";
+"use client"
 import Image from "next/image";
-import { deleteUser } from "@/app/lib/action";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-const AdminUser = async() => {
-    const users = await getUsers();
+interface User {
+    id: string;
+    _id: string;
+    username: string;
+    email?: string;
+    img?: string;
+}
+
+const AdminUser = ({ users }: { users: User[] }) => {
+    const router = useRouter();
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this user?")) return;
+
+        try {
+            const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
+            if (res.ok) {
+                router.refresh();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <div>
             <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
@@ -12,8 +34,8 @@ const AdminUser = async() => {
                 <span className="text-sm font-normal text-gray-400">({users.length})</span>
             </h2>
             <div className="space-y-3">
-                {users.map((user: any) => (
-                    <div key={user.id} className="flex items-center justify-between bg-gray-700/50 rounded-xl p-4 hover:bg-gray-700 transition-colors duration-200">
+                {users.map((user) => (
+                    <div key={user.id || user._id} className="flex items-center justify-between bg-gray-700/50 rounded-xl p-4 hover:bg-gray-700 transition-colors duration-200">
                         <div className="flex items-center gap-4 flex-1 min-w-0">
                             <Image
                                 src={user.img || "/noavatar.png"}
@@ -29,17 +51,17 @@ const AdminUser = async() => {
                         </div>
                         <div className="flex items-center gap-2 ml-4 flex-shrink-0">
                             <Link
-                                href={`/admin?editUserId=${user.id}`}
+                                href={`/admin?editUserId=${user.id || user._id}`}
                                 className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors duration-200"
                             >
                                 Edit
                             </Link>
-                            <form action={deleteUser}>
-                                <input type="hidden" name="id" value={user.id} />
-                                <button className="px-3 py-1.5 bg-red-600/80 hover:bg-red-500 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                                    Delete
-                                </button>
-                            </form>
+                            <button
+                                onClick={() => handleDelete(user.id || user._id)}
+                                className="px-3 py-1.5 bg-red-600/80 hover:bg-red-500 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                            >
+                                Delete
+                            </button>
                         </div>
                     </div>
                 ))}

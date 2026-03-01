@@ -1,6 +1,6 @@
 "use client"
-import { useActionState } from "react"
-import { addUser, updateUser } from "@/app/lib/action";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface EditUserData {
@@ -13,11 +13,57 @@ interface EditUserData {
 
 const AdminUserForm = ({ editData }: { editData?: EditUserData | null }) => {
     const isEditing = !!editData;
-    const action = isEditing ? updateUser : addUser;
-    const [state, formAction] = useActionState(action, undefined);
+    const router = useRouter();
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        setError("");
+        setSuccess("");
+        setLoading(true);
+
+        const formData = new FormData(form);
+        const body = {
+            username: formData.get("username"),
+            email: formData.get("email"),
+            password: formData.get("password"),
+            img: formData.get("img"),
+            isAdmin: formData.get("isAdmin"),
+        };
+
+        try {
+            const url = isEditing ? `/api/users/${editData.id}` : "/api/users";
+            const method = isEditing ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setError(data.error || "Something went wrong!");
+            } else {
+                setSuccess(isEditing ? "User updated successfully!" : "User added successfully!");
+                if (!isEditing) {
+                    form.reset();
+                }
+                router.refresh();
+            }
+        } catch (err) {
+            setError("Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
-        <form action={formAction} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                     {isEditing ? "✏️ Edit User" : "➕ Add New User"}
@@ -31,7 +77,6 @@ const AdminUserForm = ({ editData }: { editData?: EditUserData | null }) => {
                     </Link>
                 )}
             </div>
-            {isEditing && <input type="hidden" name="id" value={editData.id} />}
             <input
                 type="text"
                 name="username"
@@ -68,21 +113,25 @@ const AdminUserForm = ({ editData }: { editData?: EditUserData | null }) => {
                 <option value="false" className="bg-gray-800">No</option>
                 <option value="true" className="bg-gray-800">Yes</option>
             </select>
-            <button className={`w-full py-3 text-white font-semibold rounded-xl transition-colors duration-200 shadow-lg ${
-                isEditing
-                    ? "bg-amber-600 hover:bg-amber-500 shadow-amber-500/20"
-                    : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/20"
-            }`}>
-                {isEditing ? "Update User" : "Add User"}
+            <button
+                type="submit"
+                disabled={loading}
+                className={`w-full py-3 text-white font-semibold rounded-xl transition-colors duration-200 shadow-lg disabled:opacity-50 ${
+                    isEditing
+                        ? "bg-amber-600 hover:bg-amber-500 shadow-amber-500/20"
+                        : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/20"
+                }`}
+            >
+                {loading ? "Processing..." : isEditing ? "Update User" : "Add User"}
             </button>
-            {state?.error && (
+            {error && (
                 <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">
-                    {state.error}
+                    {error}
                 </p>
             )}
-            {state?.success && (
+            {success && (
                 <p className="text-green-400 text-sm bg-green-500/10 border border-green-500/20 rounded-lg px-4 py-2">
-                    {isEditing ? "User updated successfully!" : "User added successfully!"}
+                    {success}
                 </p>
             )}
         </form>
